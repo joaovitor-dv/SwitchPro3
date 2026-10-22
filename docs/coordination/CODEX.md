@@ -1,4 +1,4 @@
-# Codex task — parser hardening and host evidence
+# Codex task — USB and PS3 clean-room research
 
 ## Assignment
 
@@ -6,55 +6,59 @@
 - **Owner:** Codex
 - **Status:** ready
 - **Dependency:** none
-- **Hardware boundary:** host-only; no controller or PS3 operation
+- **Hardware boundary:** research-only; no controller or PS3 operation
 
 ## Objective
 
-Harden the existing portable parser and its CachyOS test evidence without
-expanding into USB transport, PS3 APIs, output reports, rumble or Bluetooth.
+Produce a clean-room, source-cited design packet for the future Nintendo USB
+initialization state machine and the PS3 adapter boundary. This task writes no
+production code.
 
 ## Exclusive write scope
 
-- `include/switchpro3/hid.h`
-- `src/hid.c`
-- `tests/test_hid.c`
-- `Makefile`, only if the test target needs a justified correction
-- `tools/check.sh`, only if a check needs a justified correction
-- `DEVLOG.md`, for evidence produced by this task
+- `docs/research/2026-10-22-usb-initialization.md`
+- `docs/research/2026-10-22-ps3-adapter-boundary.md`
 - this file, for the final handoff
 
-Read access to the rest of the repository is unrestricted. Do not edit the
-Claude-owned files listed in `docs/coordination/CLAUDE.md`.
+All project source, the UJM checkout and external references are read-only.
+Do not edit `README.md`, `DEVLOG.md`, `docs/architecture.md`, protocol code,
+tests, build files or the Claude coordination file.
 
 ## Work package
 
-1. Add table-driven coverage for every currently defined button bit.
-2. Cover supported report IDs `0x21`, `0x30` and `0x31` consistently.
-3. Verify every truncated common report length from 0 through 11 bytes.
-4. Verify rejected inputs leave the caller's output state unchanged.
-5. Verify valid reports with trailing bytes are accepted without reading
-   beyond the common prefix.
-6. Keep raw stick values bounded to their 12-bit representation and cover
-   minimum, midpoint and maximum values.
-7. Run the repository check entry point and record exact host evidence.
+1. Pin every researched repository and file to an exact commit.
+2. Separate protocol facts, source observations, inferences and open questions.
+3. Document the original Pro Controller USB initialization sequence as a
+   bounded state machine: commands, expected replies, deadlines, retry limits,
+   failure states and detach behavior.
+4. Identify endpoint and transfer assumptions that must be discovered at
+   runtime rather than hard-coded.
+5. Document the minimum PS3 `cellUsbd` transport and `cellPadLdd` injection
+   boundary for one `057e:2009` controller and one virtual pad.
+6. Record attach/detach, ownership, callback/thread and recovery risks drawn
+   from the audited references.
+7. Propose a small transport interface for later review, in prose or pseudocode
+   only; do not translate or adapt GPL or unlicensed implementation code.
 
 ## Acceptance criteria
 
-- Public interfaces remain freestanding-friendly C11.
-- No platform header or dynamic allocation enters the protocol core.
-- Tests fail before a relevant regression and pass after the change.
-- `tools/check.sh` passes; any skipped tool is reported as skipped, not passed.
-- `DEVLOG.md` distinguishes synthetic host evidence from hardware evidence.
-- One focused Conventional Commit is created locally. Do not push.
+- Every external claim has a repository, path and pinned commit reference.
+- GPL and unlicensed sources remain research-only; no source code is copied,
+  translated or mechanically adapted.
+- Unknowns are explicit, especially native PS3 Bluetooth and SDK availability.
+- The documents clearly distinguish CachyOS validation from PS3 validation.
+- No production code, commit, push, installation, console access or hardware
+  test is performed.
 
 ## Stop conditions
 
-Stop and report instead of guessing if the work requires an undocumented
-Nintendo packet layout, GPL/unlicensed source adaptation, a real controller,
-PS3 SDK symbols or changes outside the exclusive write scope.
+Stop and report instead of guessing if a required source is unavailable, a
+protocol claim cannot be corroborated, licensing is ambiguous beyond the
+existing audit or the work would require modifying production code.
 
 ## Handoff
 
-Append a short completion section here containing the commit hash, files
-changed, commands run, results, unresolved risks and the next exact action.
+Append a short completion section here containing files written, sources and
+commits consulted, verification performed, unresolved risks and the next exact
+action. Leave the research changes uncommitted for review and integration.
 

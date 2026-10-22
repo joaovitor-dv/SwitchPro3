@@ -27,8 +27,8 @@ evidence and remaining uncertainty.
 
 ### Two-thread work partition
 
-- **What changed:** the next host-only phase is split into an exclusive Codex
-  parser-hardening task and an exclusive Claude clean-room USB/PS3 research
+- **What changed:** the next phase is split into an exclusive Claude
+  parser-hardening task and an exclusive Codex clean-room USB/PS3 research
   task under `docs/coordination/`.
 - **Why:** implementation and protocol research can progress in parallel
   without concurrent edits, undocumented packet assumptions or accidental
