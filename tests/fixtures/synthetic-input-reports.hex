@@ -1,0 +1,8 @@
+# SYNTHETIC fixture, not captured from a controller.
+# Report 0x30 common prefix: id timer battery buttons(3) left(3) right(3)
+# neutral sticks at 0x800
+30 00 00 00 00 00 00 08 80 00 08 80
+# B and A pressed, sticks neutral   # trailing comment
+30 11 90 0c 00 00   00 08 80   00 08 80
+# left stick at full scale, right at zero, UP pressed
+30 22 91 00 00 02 ff ff ff 00 00 00

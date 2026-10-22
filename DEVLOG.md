@@ -25,6 +25,35 @@ evidence and remaining uncertainty.
 
 ## Unreleased
 
+### M1 Part A: axis calibration, fixture loader and mutation harness (SP3-CL-02)
+
+- **What changed:** `sp3_axis_calibrate()` maps a raw 12-bit sample to a signed
+  `int16_t` in `[-32767, 32767]` with a raw-sample dead zone applied around the
+  center and rescaled so the output is continuous at the edge. It validates
+  `min < center < max <= 0x0fff`, a dead zone smaller than the travel on each
+  side, and samples up to `0x0fff`; every error leaves `*out` unchanged. A
+  test-only fixture loader (`tests/fixture_loader.h`) reads hex report files
+  and rejects malformed input with a line number; the first fixture,
+  `tests/fixtures/synthetic-input-reports.hex`, is synthetic. The reply
+  decoders (Part B) are not started.
+- **Why:** M1 needs calibration and malformed-input coverage proven on the host
+  before any real report is captured. The SPI calibration layout is a protocol
+  fact still pending in `SP3-CX-02`, so this code is layout-independent.
+- **Evidence (synthetic host fixtures only):** `tools/check.sh` 0 failed, 0
+  warnings, 2 skipped (ShellCheck not installed, hints without a tag).
+  `make test` runs the HID and calibration suites. The calibration suite covers
+  fixed points, saturation, dead-zone edges, validity boundaries and a sweep of
+  all 4096 samples (bounded and monotonic) for eight calibrations. Both suites
+  also passed with `-fsanitize=address,undefined` on GCC 16.2.1 and the
+  calibration suite on clang (plain and sanitized); those runs are manual and
+  not part of `tools/check.sh`. `tools/mutation-check-calibration.sh` kills 14
+  of 14 mutants. An exclusive dead-zone edge (`<` instead of `<=`) is an
+  equivalent mutant (the rescale maps `distance == deadzone` to 0 anyway), so
+  the harness uses a one-step-wider edge instead.
+- **Open questions:** no real controller report or real calibration data was
+  used; the dead-zone semantics are a design choice, not measured behaviour.
+  CI with the runner's compiler has not run on this change yet.
+
 ### Parser hardening: table-driven host coverage (SP3-CL-01)
 
 - **What changed:** `tests/test_hid.c` now covers every defined button bit for

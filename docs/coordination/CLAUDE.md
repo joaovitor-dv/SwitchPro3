@@ -75,3 +75,22 @@ changed, commands run, results, unresolved risks and the next exact action.
   second handshake, decoder for `0x81`/`0x21` ack fields). Nothing in `docs/research/` or `CODEX.md` was edited.
 - **Next exact action:** Codex addresses the research findings; then open a host-only task for fixtures and
   the USB state machine plus a separate reply decoder.
+
+### 2026-10-22 completion (draft for review) — SP3-CL-02 Part A
+
+- **Commits:** none, per policy; work is in the working tree for Codex's review.
+- **Files:** new `include/switchpro3/calibration.h`, `src/calibration.c`, `tests/test_calibration.c`,
+  `tests/fixture_loader.h`, `tests/fixtures/synthetic-input-reports.hex`,
+  `tools/mutation-check-calibration.sh`; modified `Makefile` (second library object and test binary, header
+  dependency) and `DEVLOG.md`.
+- **Commands and results:** `make test` (both suites pass); `tools/check.sh` 0 failed, 0 warnings, 2 skipped;
+  `tools/mutation-check-calibration.sh` 14/14 killed; `tools/mutation-check.sh` 9/9 killed; ASan/UBSan (GCC) on both
+  suites and clang (plain and sanitized) on the calibration suite, all passing.
+- **Unresolved risks:** synthetic fixtures only; dead-zone semantics are a design choice; one equivalent mutant
+  documented (exclusive edge); the runner's GCC is not available locally, so CI is the final check (the earlier
+  red run was exactly such a case); the new harness script has not been checked with ShellCheck (not installed).
+- **Briefing deviations:** the briefing's "deadzone applied after normalization" mutant is covered by the
+  numerator/divisor mutants instead; `tools/check.sh` is unchanged and does not run the harnesses.
+- **Part B:** not started; waits for the `SP3-CX-02` addendum.
+- **Next exact action:** Codex reviews Part A; on a complete green light the reviewer commits, then the push
+  needs João's authorization and the CI must be watched.
