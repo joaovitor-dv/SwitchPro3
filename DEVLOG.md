@@ -25,6 +25,20 @@ evidence and remaining uncertainty.
 
 ## Unreleased
 
+### Two-thread work partition
+
+- **What changed:** the next host-only phase is split into an exclusive Codex
+  parser-hardening task and an exclusive Claude clean-room USB/PS3 research
+  task under `docs/coordination/`.
+- **Why:** implementation and protocol research can progress in parallel
+  without concurrent edits, undocumented packet assumptions or accidental
+  reuse of GPL/unlicensed source.
+- **Evidence:** each task brief defines its write scope, acceptance criteria,
+  stop conditions and handoff format. No hardware or remote action was
+  performed for this partition.
+- **Open questions:** the research handoff must be reviewed before USB or PS3
+  transport code is authorized.
+
 ### UJM governance adapted to the independent repository
 
 - **What changed:** SwitchPro3 now uses UJM's MIT license, SemVer 0.x policy,
