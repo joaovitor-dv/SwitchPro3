@@ -179,6 +179,8 @@ static void test_all_supported_ids_parse_identically(void)
     struct sp3_input_state reference;
     size_t id;
 
+    memset(&reference, 0, sizeof(reference));
+
     for (id = 0; id < sizeof(supported_ids); id++) {
         uint8_t report[12] = { 0, 0x07u, 0x80u, 0x08u, 0x02u, 0x40u };
         struct sp3_input_state state;
