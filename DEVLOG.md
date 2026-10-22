@@ -38,9 +38,12 @@ evidence and remaining uncertainty.
   0 failed, 0 warnings, 2 skipped (ShellCheck not installed, documentation
   hints without a tag). Seven manual mutations of `src/hid.c` (wrong ZL mask,
   length limit off by one, wrong `0x31` handling, wrong stick shifts, missing
-  state reset, write before validation) each made the suite fail. The test
-  proves only that trailing bytes do not change the result; it does not
-  instrument memory reads.
+  state reset, write before validation) each made the suite fail; they were
+  run by hand and are now reproducible with `tools/mutation-check.sh`, which
+  also covers two unassigned-bit leaks (9 mutants, 0 survived). The same suite
+  built with `-fsanitize=address,undefined` passed on GCC 16.2.1; that run is
+  not part of `tools/check.sh`. The test proves only that trailing bytes do not
+  change the result; it does not instrument memory reads.
 - **Open questions:** no real controller report was used; the bit layout is
   still taken from the audited protocol facts, not from a captured trace.
   Report `0x3f` remains unsupported by design.
