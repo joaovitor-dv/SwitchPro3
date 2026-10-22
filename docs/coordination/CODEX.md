@@ -58,6 +58,39 @@ existing audit or the work would require modifying production code.
 
 ## Handoff
 
+### 2026-10-22 completion — SP3-CX-01
+
+- **Files written:** `docs/research/2026-10-22-usb-initialization.md` and
+  `docs/research/2026-10-22-ps3-adapter-boundary.md`.
+- **Sources consulted:** local audit plus pinned commits
+  `4403278e4ea2f654f8130a5c03eb8b4516a0f201` (`linux/hid-nintendo.c`),
+  `fd98898b856096d441325d51fe5edad7cee19d68` (`multipad`),
+  `8925ff15c0b3ba1c1d6f6632178171a4dc728f62` (`PS3xPAD`),
+  `05929739baaab0e57b0d8ca3ad5c6407eccb19c9` (`XPAD-Revolution`) and local
+  UJM HEAD `75cac25`.
+- **Verified:** clean-room separation, source/license boundary, bounded USB
+  state-machine proposal, runtime-discovery requirements, one-device/one-pad
+  PS3 boundary, and explicit CachyOS/PS3 validation split.
+- **Not verified:** real USB timing/replies, SDK availability, PS3 callbacks,
+  `cellPadLdd` semantics, native Bluetooth, console behavior, and hardware.
+- **Unresolved risks:** exact firmware-dependent USB handshake details, PS3 LDD
+  ownership/cancellation semantics, and all target SDK/legal availability.
+- **Next exact action:** cross-review these two research documents; then, only
+  after approval, implement host-only fixtures/state-machine tests in a separate
+  task. Do not implement PS3 or run hardware from this handoff.
+
+### 2026-10-22 correction pass after Claude review
+
+- **Corrections:** added the second post-baud `HANDSHAKE`, separated USB
+  `0x81` and subcommand `0x21` response decoding from the input parser,
+  clarified source paths/provenance, made `PREPARE` skip-unless-evidence, and
+  marked shutdown `EN_TIMEOUT` as an inference/proposal.
+- **Verification boundary:** documentation-only; no production code, tests,
+  hardware, console, commit or push performed.
+- **Remaining gap:** the exact source paths/symbols inside the three PS3
+  repositories still require a fresh source-level re-audit before implementation;
+  this pass does not claim SDK or PS3 validation.
+
 Append a short completion section here containing files written, sources and
 commits consulted, verification performed, unresolved risks and the next exact
 action. Leave the research changes uncommitted for review and integration.
