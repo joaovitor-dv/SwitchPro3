@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-or-later */
+/* SPDX-License-Identifier: MIT */
 #ifndef SWITCHPRO3_HID_H
 #define SWITCHPRO3_HID_H
 

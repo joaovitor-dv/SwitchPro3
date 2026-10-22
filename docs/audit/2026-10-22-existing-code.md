@@ -9,10 +9,10 @@ read-only; its recorded hash identifies HEAD, not a clean working tree.
 
 | Reference | Audited commit | License observed | Useful evidence | Reuse decision |
 |---|---|---|---|---|
-| `esc0rtd3w/multipad` | `fd98898b856096d441325d51fe5edad7cee19d68` | GPL-3.0 | PS3 kernel/user split, `cellUsbd` path, virtual-pad bridge, preliminary Switch parsing | May be adapted only under GPL with attribution and provenance |
+| `esc0rtd3w/multipad` | `fd98898b856096d441325d51fe5edad7cee19d68` | GPL-3.0 | PS3 kernel/user split, `cellUsbd` path, virtual-pad bridge, preliminary Switch parsing | Reference only for the MIT codebase; do not copy or adapt GPL code |
 | `aldostools/PS3xPAD` | `8925ff15c0b3ba1c1d6f6632178171a4dc728f62` | No repository license found | Historical VSH SPRX, USB LDD and `cellPadLdd` architecture | Reference only; do not copy |
 | `GabaRSk/XPAD-Revolution` | `05929739baaab0e57b0d8ca3ad5c6407eccb19c9` | No license for the PS3 core; notices cover viewer dependencies only | Maintained PS3xPAD derivative, ring buffers, detach safety, game/VSH separation | Reference only; do not copy |
-| Linux `hid-nintendo.c` | `4403278e4ea2f654f8130a5c03eb8b4516a0f201` | GPL-2.0-or-later | Canonical report IDs, USB commands, calibration, parsing, LEDs and rumble | Protocol facts may guide a clean implementation; copied/adapted code must retain GPL provenance |
+| Linux `hid-nintendo.c` | `4403278e4ea2f654f8130a5c03eb8b4516a0f201` | GPL-2.0-or-later | Canonical report IDs, USB commands, calibration, parsing, LEDs and rumble | Protocol facts may guide a clean implementation; do not copy or adapt GPL code into the MIT codebase |
 | Universal Joystick Manager | local `75cac25` | MIT | Original-controller identification and CachyOS validation workflow | Read-only external reference; no modification or vendoring |
 
 ## Findings
@@ -51,8 +51,9 @@ support requires separate reverse engineering and hardware evidence.
 
 PS3XPAD and XPAD-Revolution have no explicit license covering their PS3 source
 in the audited trees. Public source availability is not permission to copy.
-SwitchPro3 therefore uses original code and protocol facts, with GPL-compatible
-licensing selected for future, attributable integration of GPL references.
+SwitchPro3 therefore uses original MIT-licensed code and protocol facts. GPL
+references remain external research material: incorporating their code would
+require a separate license decision and cannot happen silently.
 
 ## Immediate risks
 
@@ -62,5 +63,5 @@ licensing selected for future, attributable integration of GPL references.
 | Incorrect axis calibration | Drift, reduced range or stuck movement | Preserve raw 12-bit values until calibration is implemented |
 | Blocking output command | Input loss or frozen VSH | Separate future transport state machine from parser |
 | LDD ownership conflict | Controller disappears or USB table fills | One exact VID/PID and symmetric attach/detach in first PS3 adapter |
-| Unlicensed code reuse | Redistribution cannot be justified | No copying from PS3XPAD derivatives; provenance table for every imported unit |
+| Incompatible or unlicensed code reuse | Redistribution cannot be justified | No copying from GPL or unlicensed references into the MIT tree; provenance table for every imported unit |
 

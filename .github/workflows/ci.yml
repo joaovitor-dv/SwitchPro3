@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install check dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends shellcheck
+      - name: Checks
+        run: tools/check.sh
+
