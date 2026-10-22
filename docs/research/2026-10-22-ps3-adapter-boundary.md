@@ -1,18 +1,18 @@
 # PS3 adapter boundary — clean-room research
 
-Status: research-only, uncommitted, no PS3 or controller access.
+Status: research-only, locally integrated, no PS3 or controller access.
 
 ## Evidence boundary
 
-The local audit pins the following read-only references. The paths below are
-the source locations to inspect when this design is independently re-audited;
-they are not implementation inputs and no code is copied.
+The local audit pins the following read-only references. Exact source paths and
+symbols for the PS3 repositories were not confirmed in this pass; the entries
+below must not be read as source-level provenance or implementation inputs.
 
 | Repository | Commit | Evidence used | License boundary |
 |---|---|---|---|
-| `esc0rtd3w/multipad` | `fd98898b856096d441325d51fe5edad7cee19d68` | `README.md`; PS3 transport and bridge source paths recorded by the local audit | GPL-3.0; research only |
-| `aldostools/PS3xPAD` | `8925ff15c0b3ba1c1d6f6632178171a4dc728f62` | `README.md`; historical VSH/USB/LDD claims require source-path recheck before implementation | no repository license observed; research only |
-| `GabaRSk/XPAD-Revolution` | `05929739baaab0e57b0d8ca3ad5c6407eccb19c9` | repository README and the PS3 source tree at this commit; detach/ring-buffer claims remain audit observations | no license covering PS3 core observed; research only |
+| `esc0rtd3w/multipad` | `fd98898b856096d441325d51fe5edad7cee19d68` | repository-level audit only; exact path/symbol not confirmed | GPL-3.0; research only |
+| `aldostools/PS3xPAD` | `8925ff15c0b3ba1c1d6f6632178171a4dc728f62` | repository-level audit only; exact path/symbol not confirmed | no repository license observed; research only |
+| `GabaRSk/XPAD-Revolution` | `05929739baaab0e57b0d8ca3ad5c6407eccb19c9` | repository-level audit only; exact path/symbol not confirmed | no license covering PS3 core observed; research only |
 | Universal Joystick Manager | local HEAD `75cac25` | device identity and CachyOS workflow | MIT; read-only |
 
 No code from these repositories is included or mechanically adapted.
@@ -55,12 +55,11 @@ cellUsbd attach -> transport context -> bounded report queue
 * A stalled endpoint, malformed report, timeout, or callback error causes a
   bounded recovery transition, not an unbounded retry or VSH-wide reset.
 
-These are safety requirements inferred from the audited architecture and its
-recorded detach/LDD risks; they are not proof that the public references are
-safe to deploy on a PS3. The repository/path/commit provenance for each
-architecture claim is the table above plus the local audit
-`docs/audit/2026-10-22-existing-code.md`; source-level symbols must be
-rechecked before any implementation task.
+These are safety requirements inferred from the local audit and its recorded
+detach/LDD risks; they are not proof that the public references are safe to
+deploy on a PS3. The local audit and pinned commits identify repositories, but
+do not yet provide source-level path/symbol provenance. That re-audit is a
+hard prerequisite for any M3 implementation task.
 
 ## Proposed transport interface (prose only)
 

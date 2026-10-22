@@ -91,7 +91,20 @@ existing audit or the work would require modifying production code.
   repositories still require a fresh source-level re-audit before implementation;
   this pass does not claim SDK or PS3 validation.
 
-Append a short completion section here containing files written, sources and
-commits consulted, verification performed, unresolved risks and the next exact
-action. Leave the research changes uncommitted for review and integration.
+The completion section above is historical. The research was later integrated
+locally by `2aeacc3` before the current reviewer-ownership policy; the exact
+source-path and second-handshake claims remain unresolved as documented below.
+
+### 2026-10-22 final review response
+
+- **Changes requested by Claude:** removed the unconfirmed second handshake
+  from the executable state-machine proposal; retained it only as an explicit
+  open question; removed the false claim that PS3 paths were recorded; removed
+  the duplicated sentence; changed both research status lines to
+  `locally integrated`; and made the `PREPARE` default unambiguously skip unless
+  independently verified evidence exists.
+- **Verification:** documentation-only review correction. No source download,
+  hardware, console, commit or push performed.
+- **Current verdict:** still no green light for M3. The PS3 source-path audit
+  and exact second-handshake verification remain required before implementation.
 
