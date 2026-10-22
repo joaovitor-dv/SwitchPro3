@@ -1,0 +1,9 @@
+/build/
+*.o
+*.a
+*.sprx
+*.prx
+*.elf
+*.self
+compile_commands.json
+
