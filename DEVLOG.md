@@ -25,6 +25,26 @@ evidence and remaining uncertainty.
 
 ## Unreleased
 
+### Parser hardening: table-driven host coverage (SP3-CL-01)
+
+- **What changed:** `tests/test_hid.c` now covers every defined button bit for
+  report IDs `0x21`, `0x30` and `0x31`, rejects every other report ID, rejects
+  every truncated length from 0 to 11 bytes, and checks that rejected input
+  leaves the caller's state untouched. It also checks that trailing bytes are
+  ignored and that stick values stay within 12 bits. No production code changed.
+- **Why:** the parser will sit inside VSH, so malformed and short input must be
+  proven harmless before any transport feeds it.
+- **Evidence (synthetic host fixtures only):** `tools/check.sh` on CachyOS:
+  0 failed, 0 warnings, 2 skipped (ShellCheck not installed, documentation
+  hints without a tag). Seven manual mutations of `src/hid.c` (wrong ZL mask,
+  length limit off by one, wrong `0x31` handling, wrong stick shifts, missing
+  state reset, write before validation) each made the suite fail. The test
+  proves only that trailing bytes do not change the result; it does not
+  instrument memory reads.
+- **Open questions:** no real controller report was used; the bit layout is
+  still taken from the audited protocol facts, not from a captured trace.
+  Report `0x3f` remains unsupported by design.
+
 ### Two-thread work partition
 
 - **What changed:** the next phase is split into an exclusive Claude
