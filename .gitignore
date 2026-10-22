@@ -7,3 +7,4 @@
 *.self
 compile_commands.json
 
+/PROJECT_CONTROL/
