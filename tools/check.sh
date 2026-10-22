@@ -39,7 +39,37 @@ step() {
 
 step "portable C build and unit tests" make test
 step "GCC static analyzer" make test BUILD_DIR=build-analyzer CFLAGS='-O2 -fanalyzer'
-step "shell syntax" bash -n tools/check.sh
+# LeakSanitizer needs ptrace and does not work in every sandbox. Probe it instead of
+# assuming: a clean program must pass and a leaking one must fail with it enabled.
+# SP3_LEAK_SANITIZER=off forces it off (for reproducing a restricted environment).
+leaks=off
+if [ "${SP3_LEAK_SANITIZER:-auto}" != off ]; then
+    probe=$(mktemp -d)
+    printf 'int main(void){return 0;}\n' >"$probe/clean.c"
+    printf '#include <stdlib.h>\nint main(void){volatile char *p=malloc(16);p[0]=1;p=0;return 0;}\n' >"$probe/leak.c"
+    if cc -fsanitize=address -o "$probe/clean" "$probe/clean.c" 2>/dev/null &&
+       cc -O0 -fsanitize=address -o "$probe/leak" "$probe/leak.c" 2>/dev/null &&
+       ASAN_OPTIONS=detect_leaks=1 "$probe/clean" >/dev/null 2>&1 &&
+       ! ASAN_OPTIONS=detect_leaks=1 "$probe/leak" >/dev/null 2>&1; then
+        leaks=on
+    fi
+    rm -rf "$probe"
+fi
+if [ "$leaks" = on ]; then
+    step "ASan/UBSan unit tests (LeakSanitizer active)" \
+        env ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+        make test BUILD_DIR=build-sanitize \
+        CFLAGS='-O1 -g -fsanitize=address,undefined -fno-sanitize-recover=all'
+else
+    step "ASan/UBSan unit tests (leak detection OFF)" \
+        env ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 \
+        make test BUILD_DIR=build-sanitize \
+        CFLAGS='-O1 -g -fsanitize=address,undefined -fno-sanitize-recover=all'
+    skip "LeakSanitizer" "unavailable or disabled here (ptrace restriction); sanitizers ran with detect_leaks=0"
+fi
+step "parser mutation check" tools/mutation-check.sh
+step "calibration mutation check" tools/mutation-check-calibration.sh
+step "shell syntax" bash -c 'for f in tools/*.sh; do bash -n "$f" || exit 1; done'
 step "MIT SPDX headers" bash -c '
     missing=0
     while IFS= read -r file; do
@@ -57,7 +87,7 @@ step "required project documentation" bash -c '
 '
 
 if command -v shellcheck >/dev/null 2>&1; then
-    step "ShellCheck" shellcheck -S warning tools/check.sh
+    step "ShellCheck" shellcheck -S warning tools/*.sh
 else
     skip "ShellCheck" "not installed: CI must run it once added as a blocking job"
 fi

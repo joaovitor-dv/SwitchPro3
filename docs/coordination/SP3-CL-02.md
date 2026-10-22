@@ -147,3 +147,39 @@ I/O, PS3 symbols or files outside the write scope, or if reuse of GPL/unlicensed
 
 Append a completion section here: commits (none, per policy), files, commands, results, unresolved risks
 and the next exact action.
+
+## Part B contract draft (for review; offsets come only from the `SP3-CX-02` addendum)
+
+The shapes below do not depend on packet offsets. Every numeric layout constant (minimum sizes, field
+offsets, payload lengths) is defined from the addendum with its citation; none is invented here.
+
+```c
+enum sp3_reply_status { SP3_REPLY_OK = 0, SP3_REPLY_ERROR_ARGUMENT = -1, SP3_REPLY_ERROR_SHORT = -2,
+                        SP3_REPLY_ERROR_UNSUPPORTED_REPORT = -3, SP3_REPLY_ERROR_MISMATCH = -4,
+                        SP3_REPLY_ERROR_PAYLOAD = -5 };
+
+struct sp3_usb_response { uint8_t command; uint8_t status; };      /* meaning of status: addendum */
+struct sp3_subcmd_reply { uint8_t ack; uint8_t subcommand;
+                          const uint8_t *payload; size_t payload_length; };
+
+enum sp3_reply_status sp3_decode_usb_response(const uint8_t *report, size_t size,
+                                              uint8_t expected_command, struct sp3_usb_response *out);
+enum sp3_reply_status sp3_decode_subcmd_reply(const uint8_t *report, size_t size,
+                                              uint8_t expected_subcommand, struct sp3_subcmd_reply *out);
+```
+
+- **Check order** (same as the input parser): NULL arguments, report ID (`0x81` / `0x21`), minimum length,
+  command/subcommand mismatch, then payload rules. Every error leaves `*out` unchanged; for `out == NULL`
+  only the status is checked.
+- `payload` points into the caller's buffer and is valid only as long as that buffer; the decoder never copies
+  or retains it, and never reads past `size`.
+- **ACK/NACK:** a NACK is reported as `SP3_REPLY_OK` with `ack` carrying the raw byte, so the state machine
+  decides policy; the decoder rejects only malformed frames. (If the addendum shows a NACK cannot be
+  distinguished without payload context, this line is revisited in review.)
+- **Tests:** every length from 0 to the largest accepted size + 1, every other report ID, mismatched command
+  and subcommand, trailing bytes, `REQ_DEV_INFO` payload length rules (from the addendum), `out == NULL`;
+  synthetic fixtures only, named `synthetic-*.hex`.
+- **Mutation harness:** a sibling script, same rules as the others (0 survivors, refuse non-applying or
+  non-compiling mutants), covering at least: wrong report ID, off-by-one length limit, mismatch check removed,
+  write before validation, payload length unchecked, payload pointer off by one.
+- Write scope as in Part B above plus `tests/fixtures/` and the new harness script.

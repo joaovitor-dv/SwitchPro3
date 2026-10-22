@@ -25,6 +25,36 @@ evidence and remaining uncertainty.
 
 ## Unreleased
 
+### Check entry point runs sanitizers, mutation harnesses and ShellCheck on every script
+
+- **What changed:** `tools/check.sh` now also builds and runs both unit suites
+  with `-fsanitize=address,undefined`, runs both mutation harnesses
+  (`tools/mutation-check.sh`, `tools/mutation-check-calibration.sh`), checks the
+  syntax of every `tools/*.sh`, and runs ShellCheck on every `tools/*.sh`
+  instead of `check.sh` alone.
+- **Why:** these checks were manual evidence so far; the earlier red CI run and
+  the review of the sanitizer claim showed that manual evidence is easy to
+  mis-state. CI runs `tools/check.sh`, so it now runs them too.
+- **Evidence (host):** `tools/check.sh` 0 failed, 0 warnings, 1 skipped
+  (documentation hints without a tag); ShellCheck 0.11.0 now runs locally and
+  passes on every `tools/*.sh`. The sanitizer binary is instrumented (`nm`
+  shows ASan symbols). In a scratch copy with one test call removed, the
+  parser mutation step failed, so the wiring detects a weakened suite. CI
+  has not run this change yet.
+- **Leak detection is probed, not assumed:** LeakSanitizer needs ptrace and
+  fails inside some sandboxes (a reviewer environment reported `LeakSanitizer
+  has encountered a fatal error`). `tools/check.sh` now compiles two tiny probes
+  (one clean, one leaking) and enables leak detection only if the clean one
+  passes and the leaking one fails. Otherwise the sanitizer step is labelled
+  `leak detection OFF`, runs with `ASAN_OPTIONS=detect_leaks=0`, and a separate
+  `skip LeakSanitizer` line appears, so "sanitizers passed with leaks off" can no
+  longer be read as "LeakSanitizer passed". `SP3_LEAK_SANITIZER=off` reproduces
+  the restricted case anywhere. Both modes pass locally (active on this machine;
+  forced off via the variable). The restricted environment itself has not been
+  re-run by the author.
+- **Open questions:** the mutation steps take a few seconds locally; whether the
+  CI runner enables LeakSanitizer is only known after the first run.
+
 ### M1 Part A: axis calibration, fixture loader and mutation harness (SP3-CL-02)
 
 - **What changed:** `sp3_axis_calibrate()` maps a raw 12-bit sample to a signed
